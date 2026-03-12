@@ -14,6 +14,10 @@ export default function BookingForm() {
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({
+    type: null,
+    text: '',
+  });
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -21,19 +25,35 @@ export default function BookingForm() {
     bookingDate: '',
   });
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
+  // Default services with pricing
+  const defaultServices: Service[] = [
+    {
+      _id: '1',
+      name: 'CNG',
+      description: 'Auto Rickshaw Service',
+      price: 1000, // 10 Taka in cents (converted for Stripe)
+      duration: 30,
+    },
+    {
+      _id: '2',
+      name: 'Car',
+      description: 'Car Rental Service',
+      price: 2000, // 20 Taka in cents
+      duration: 60,
+    },
+    {
+      _id: '3',
+      name: 'Bus',
+      description: 'Bus Travel Service',
+      price: 3000, // 30 Taka in cents
+      duration: 120,
+    },
+  ];
 
-  const fetchServices = async () => {
-    try {
-      const response = await fetch('/api/services');
-      const data = await response.json();
-      setServices(data);
-    } catch (error) {
-      console.error('Failed to fetch services:', error);
-    }
-  };
+  useEffect(() => {
+    // Use default services instead of fetching
+    setServices(defaultServices);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -44,17 +64,18 @@ export default function BookingForm() {
 
   const handleBooking = async () => {
     if (!selectedService || !formData.customerName || !formData.customerEmail || !formData.customerPhone || !formData.bookingDate) {
-      alert('Please fill in all fields');
+      setMessage({ type: 'error', text: 'Please fill in all fields' });
       return;
     }
 
     setLoading(true);
+    setMessage({ type: null, text: '' });
 
     try {
       const bookingData = {
         serviceId: selectedService._id,
         serviceName: selectedService.name,
-        amount: selectedService.price * 100, // Convert to cents
+        amount: selectedService.price * 100, // Convert to cents for Stripe
         ...formData,
       };
 
@@ -69,12 +90,17 @@ export default function BookingForm() {
       const data = await response.json();
 
       if (data.sessionId) {
+        setMessage({ type: 'success', text: 'Booking successful! Redirecting to payment...' });
         // Redirect to Stripe Checkout
-        window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+        setTimeout(() => {
+          window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+        }, 1500);
+      } else {
+        setMessage({ type: 'error', text: 'Booking failed. Please try again.' });
       }
     } catch (error) {
       console.error('Booking error:', error);
-      alert('Failed to process booking');
+      setMessage({ type: 'error', text: 'Booking failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -82,7 +108,17 @@ export default function BookingForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Book a Service</h1>
+      <h1 className="text-3xl font-bold mb-8 text-green-600">Book a Service</h1>
+
+      {message.type && (
+        <div
+          className={`mb-6 p-4 rounded-lg text-white ${
+            message.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-6">
@@ -97,7 +133,7 @@ export default function BookingForm() {
             <option value="">Choose a service...</option>
             {services.map((service) => (
               <option key={service._id} value={service._id}>
-                {service.name} - ${(service.price / 100).toFixed(2)}
+                {service.name} - {service.price / 100} Taka
               </option>
             ))}
           </select>
@@ -105,10 +141,16 @@ export default function BookingForm() {
 
         {selectedService && (
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-semibold">{selectedService.name}</h3>
-            <p className="text-gray-600">{selectedService.description}</p>
-            <p className="mt-2">Duration: {selectedService.duration} minutes</p>
-            <p className="font-bold text-lg mt-2">Price: ${(selectedService.price / 100).toFixed(2)}</p>
+            <h3 className="font-semibold text-lg">{selectedService.name}</h3>
+            <p className="text-gray-600 mb-3">{selectedService.description}</p>
+            <div className="border-t pt-3">
+              <p className="mb-2">
+                <span className="font-medium">Duration:</span> {selectedService.duration} minutes
+              </p>
+              <p className="font-bold text-lg text-green-600">
+                <span className="font-medium">Price:</span> {selectedService.price / 100} Taka
+              </p>
+            </div>
           </div>
         )}
 
