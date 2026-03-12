@@ -23,7 +23,11 @@ export default function Home() {
                 Book reliable CNG, Cars, and Buses instantly. Get professional service at competitive prices with real-time location tracking.
               </p>
               <div className="flex gap-4">
-                <button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold transition transform hover:scale-105">
+                <button 
+                  onClick={() => {
+                    document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold transition transform hover:scale-105">
                   Book Now
                 </button>
                 <button className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold transition">
@@ -43,7 +47,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section id="services" className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -57,10 +61,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* CNG Card */}
             <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition p-8 text-center">
-              <div className="inline-block bg-yellow-100 p-4 rounded-full mb-6">
-                <svg className="w-12 h-12 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm11 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-                </svg>
+              <div className="flex justify-center mb-6">
+                <div className="inline-block bg-yellow-100 p-4 rounded-full">
+                  <svg className="w-12 h-12 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm11 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+                  </svg>
+                </div>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">CNG Auto</h3>
               <p className="text-gray-600 mb-6">Quick and affordable auto rickshaw service for short distances and local travel.</p>
@@ -76,13 +82,17 @@ export default function Home() {
 
             {/* Car Card */}
             <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition p-8 text-center transform md:-translate-y-4">
-              <div className="inline-block bg-blue-100 p-4 rounded-full mb-6">
-                <svg className="w-12 h-12 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm11 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-                </svg>
+              <div className="flex justify-center mb-4">
+                <div className="inline-block bg-blue-100 p-4 rounded-full">
+                  <svg className="w-12 h-12 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm11 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+                  </svg>
+                </div>
               </div>
-              <div className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-semibold mb-4">
-                Most Popular
+              <div className="flex justify-center mb-4">
+                <div className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-semibold">
+                  Most Popular
+                </div>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Car Rental</h3>
               <p className="text-gray-600 mb-6">Comfortable car service for longer distances with professional drivers and premium comfort.</p>
@@ -98,10 +108,12 @@ export default function Home() {
 
             {/* Bus Card */}
             <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition p-8 text-center">
-              <div className="inline-block bg-purple-100 p-4 rounded-full mb-6">
-                <svg className="w-12 h-12 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17 19h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V9h-2v2zm-6-9C6.48 2 2 2 2 6c0 3.25 3 5.68 5 7.97V19h2v-5.97C10 10.68 13 8.25 13 5c0-4-4.48-4-6-4zm0 2h4c0 2.5-2 4-4 4-2 0-4-1.5-4-4h4z" />
-                </svg>
+              <div className="flex justify-center mb-6">
+                <div className="inline-block bg-purple-100 p-4 rounded-full">
+                  <svg className="w-12 h-12 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 19h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V9h-2v2zm-6-9C6.48 2 2 2 2 6c0 3.25 3 5.68 5 7.97V19h2v-5.97C10 10.68 13 8.25 13 5c0-4-4.48-4-6-4zm0 2h4c0 2.5-2 4-4 4-2 0-4-1.5-4-4h4z" />
+                  </svg>
+                </div>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Bus Travel</h3>
               <p className="text-gray-600 mb-6">Long-distance bus service for group travel and inter-city journeys with comfort.</p>
@@ -119,7 +131,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-4 bg-white">
+      <section id="how-it-works" className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -138,12 +150,13 @@ export default function Home() {
               { num: 4, title: 'Confirm & Pay', desc: 'Complete payment and confirm your booking' },
             ].map((step, idx) => (
               <div key={idx} className="text-center">
-                <div className="inline-block w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-                  {step.num}
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">
+                    {step.num}
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
                 <p className="text-gray-600">{step.desc}</p>
-                {idx < 3 && <div className="hidden md:block absolute left-1/2 transform translate-x-8 translate-y-20 text-gray-300 text-3xl">→</div>}
               </div>
             ))}
           </div>
@@ -196,7 +209,7 @@ export default function Home() {
       </section>
 
       {/* Booking Section */}
-      <section className="py-20 px-4 bg-white">
+      <section id="booking-section" className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">

@@ -34,13 +34,13 @@ export default function RootLayout({
               <h1 className="text-2xl font-bold text-gray-900">Booking</h1>
             </div>
             <div className="hidden md:flex space-x-8 items-center">
-              <a href="/" className="text-gray-700 hover:text-blue-600 font-medium transition">
+              <a href="#home" className="text-gray-700 hover:text-blue-600 font-medium transition">
                 Home
               </a>
-              <a href="/#services" className="text-gray-700 hover:text-blue-600 font-medium transition">
+              <a href="#services" className="text-gray-700 hover:text-blue-600 font-medium transition">
                 Services
               </a>
-              <a href="/#how-it-works" className="text-gray-700 hover:text-blue-600 font-medium transition">
+              <a href="#how-it-works" className="text-gray-700 hover:text-blue-600 font-medium transition">
                 How It Works
               </a>
               <a href="/admin" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition">
