@@ -1,36 +1,215 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Service Booking Website
 
-## Getting Started
+A modern, full-stack booking platform that allows users to book services and make payments via Stripe. Includes an admin panel for managing bookings and automated email notifications.
 
-First, run the development server:
+## Features
+
+- **Service Selection & Booking**: Browse and book various services
+- **Stripe Payment Integration**: Secure payment processing
+- **Email Notifications**: Automatic confirmation emails after successful payment
+- **Admin Panel**: Manage all bookings with status updates
+- **Responsive Design**: Works seamlessly on all devices
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB
+- **Payment**: Stripe
+- **Email**: Nodemailer
+- **Hosting**: Vercel
+
+## Prerequisites
+
+- Node.js 18+ and npm
+- MongoDB Atlas account (free tier available)
+- Stripe account
+- Gmail account (for email notifications)
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd book
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Create `.env.local` file** with the following variables:
+   ```
+   # MongoDB
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/booking_db
+
+   # Stripe
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_key
+   STRIPE_SECRET_KEY=sk_test_your_key
+   STRIPE_WEBHOOK_SECRET=whsec_your_secret
+
+   # Email
+   EMAIL_USER=your_email@gmail.com
+   EMAIL_PASSWORD=your_app_password
+   ADMIN_EMAIL=admin@example.com
+
+   # Admin
+   ADMIN_SECRET_KEY=your_secure_key
+
+   # Base URL
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   ```
+
+## Setup Instructions
+
+### 1. MongoDB Setup
+- Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- Create a free cluster
+- Get your connection string and add it to `.env.local`
+
+### 2. Stripe Setup
+- Sign up at [Stripe](https://stripe.com)
+- Get your publishable and secret keys from the dashboard
+- Create a webhook endpoint pointing to `https://yourdomain.com/api/webhook/stripe`
+
+### 3. Email Setup (Gmail)
+- Enable 2-factor authentication on your Gmail account
+- Generate an [App Password](https://support.google.com/accounts/answer/185833)
+- Use the generated password as `EMAIL_PASSWORD` in `.env.local`
+
+### 4. Seed Sample Services
+Create sample services by making a POST request to `/api/services`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+curl -X POST http://localhost:3000/api/services \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Web Development",
+    "description": "Professional web development services",
+    "price": 50000,
+    "duration": 60
+  }'
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or access the MongoDB directly and insert sample services.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running the Project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Development
+npm run dev
 
-## Learn More
+# Production build
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+The application will be available at `http://localhost:3000`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### User Booking
+1. Navigate to the home page
+2. Select a service from the dropdown
+3. Fill in your details (name, email, phone, date/time)
+4. Click "Book Now"
+5. Complete payment on Stripe
+6. Receive confirmation email
 
-## Deploy on Vercel
+### Admin Panel
+1. Navigate to `/admin`
+2. Enter your admin secret key
+3. View all bookings
+4. Update booking status (Pending, Paid, Confirmed, Cancelled)
+5. Delete bookings if needed
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Public
+- `GET /api/services` - List all services
+- `POST /api/checkout` - Create Stripe checkout session
+- `POST /api/webhook/stripe` - Stripe webhook handler
+
+### User
+- `GET /api/bookings` - List bookings
+- `POST /api/bookings` - Create booking
+- `GET /api/bookings/[id]` - Get booking details
+- `PUT /api/bookings/[id]` - Update booking
+- `DELETE /api/bookings/[id]` - Delete booking
+
+### Admin
+- `GET /api/admin/bookings` - List all bookings (requires auth)
+- `PUT /api/admin/bookings/[id]` - Update booking (requires auth)
+- `DELETE /api/admin/bookings/[id]` - Delete booking (requires auth)
+
+## Deployment to Vercel
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
+2. **Connect to Vercel**
+   - Go to [Vercel](https://vercel.com)
+   - Click "New Project"
+   - Select your GitHub repository
+   - Add environment variables (same as `.env.local`)
+   - Click "Deploy"
+
+3. **Update Stripe Webhook**
+   - After deployment, update your Stripe webhook URL to point to your Vercel domain
+   - Webhook path: `https://yourdomain.vercel.app/api/webhook/stripe`
+
+## Project Structure
+
+```
+├── app/
+│   ├── api/               # API routes
+│   │   ├── services/      # Service endpoints
+│   │   ├── bookings/      # Booking endpoints
+│   │   ├── checkout/      # Stripe checkout
+│   │   ├── webhook/       # Stripe webhook
+│   │   └── admin/         # Admin endpoints
+│   ├── admin/             # Admin page
+│   ├── success/           # Payment success page
+│   ├── cancel/            # Payment cancel page
+│   └── page.tsx           # Home page
+├── components/            # React components
+│   ├── BookingForm.tsx    # Booking form component
+│   └── AdminPanel.tsx     # Admin panel component
+├── models/                # Database models
+│   ├── Service.ts         # Service schema
+│   └── Booking.ts         # Booking schema
+├── lib/
+│   ├── db.ts              # MongoDB connection
+│   └── email.ts           # Email service
+└── .env.local             # Environment variables
+```
+
+## Troubleshooting
+
+### Email not sending
+- Verify Gmail app password is correct
+- Check that 2FA is enabled on your Gmail account
+- Ensure ADMIN_EMAIL environment variable is set
+
+### Stripe webhook not receiving events
+- Verify webhook secret is correct
+- Check that Stripe webhook endpoint URL matches your deployment
+- Use Stripe CLI for local testing: `stripe listen --forward-to localhost:3000/api/webhook/stripe`
+
+### MongoDB connection issues
+- Verify connection string is correct
+- Check that IP address is whitelisted in MongoDB Atlas
+- Ensure database name in connection string is correct
+
+## License
+
+MIT License
+
+## Support
+
+For issues or questions, please open an issue in the GitHub repository.
