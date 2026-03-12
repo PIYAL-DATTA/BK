@@ -43,7 +43,11 @@ export async function POST(request: Request) {
             booking.customerName,
             booking.serviceName,
             booking.bookingDate,
-            booking.amount
+            booking.amount,
+            booking.duration,
+            booking.durationUnit,
+            booking.destination,
+            booking.hourlyRate
           );
           if (!emailSent) {
             console.warn('Failed to send booking confirmation email');
@@ -58,7 +62,12 @@ export async function POST(request: Request) {
             booking.customerName,
             booking.serviceName,
             booking.bookingDate,
-            booking.amount
+            booking.amount,
+            booking.duration,
+            booking.durationUnit,
+            booking.destination,
+            booking.customerEmail,
+            booking.customerPhone
           );
           if (!adminEmailSent) {
             console.warn('Failed to send admin notification email');

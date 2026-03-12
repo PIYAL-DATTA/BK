@@ -16,7 +16,17 @@ export async function POST(request: Request) {
 
     // Create booking in database
     const booking = await Booking.create({
-      ...bookingData,
+      serviceId: bookingData.serviceId,
+      serviceName: bookingData.serviceName,
+      customerName: bookingData.customerName,
+      customerEmail: bookingData.customerEmail,
+      customerPhone: bookingData.customerPhone,
+      bookingDate: bookingData.bookingDate,
+      amount: bookingData.amount,
+      duration: bookingData.duration,
+      durationUnit: bookingData.durationUnit,
+      destination: bookingData.destination,
+      hourlyRate: bookingData.hourlyRate,
       status: 'pending',
     });
 

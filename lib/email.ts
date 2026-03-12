@@ -22,8 +22,15 @@ export async function sendBookingConfirmation(
   customerName: string,
   serviceName: string,
   bookingDate: Date,
-  amount: number
+  amount: number,
+  duration?: number,
+  durationUnit?: string,
+  destination?: string,
+  hourlyRate?: number
 ) {
+  const durationText = duration && durationUnit ? `${duration} ${durationUnit}${duration > 1 ? 's' : ''}` : 'N/A';
+  const rateText = hourlyRate ? `${hourlyRate} Taka/hour` : 'Variable';
+  
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -40,6 +47,9 @@ export async function sendBookingConfirmation(
             <p><strong>Service:</strong> ${serviceName}</p>
             <p><strong>Booking Date:</strong> ${new Date(bookingDate).toLocaleDateString()}</p>
             <p><strong>Booking Time:</strong> ${new Date(bookingDate).toLocaleTimeString()}</p>
+            <p><strong>Duration:</strong> ${durationText}</p>
+            <p><strong>Rate:</strong> ${rateText}</p>
+            <p><strong>Pickup Location:</strong> ${destination || 'N/A'}</p>
             <p><strong>Amount Paid:</strong> ${(amount / 100).toFixed(0)} Taka</p>
           </div>
           <p>We look forward to serving you!</p>
@@ -64,8 +74,15 @@ export async function sendAdminNotification(
   customerName: string,
   serviceName: string,
   bookingDate: Date,
-  amount: number
+  amount: number,
+  duration?: number,
+  durationUnit?: string,
+  destination?: string,
+  customerEmail?: string,
+  customerPhone?: string
 ) {
+  const durationText = duration && durationUnit ? `${duration} ${durationUnit}${duration > 1 ? 's' : ''}` : 'N/A';
+  
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: process.env.ADMIN_EMAIL,
@@ -79,7 +96,11 @@ export async function sendAdminNotification(
           <p>A new booking has been received:</p>
           <div style="background-color: white; border-left: 4px solid #2196F3; padding: 15px; margin: 20px 0;">
             <p><strong>Customer Name:</strong> ${customerName}</p>
+            <p><strong>Customer Email:</strong> ${customerEmail || 'N/A'}</p>
+            <p><strong>Customer Phone:</strong> ${customerPhone || 'N/A'}</p>
             <p><strong>Service:</strong> ${serviceName}</p>
+            <p><strong>Duration:</strong> ${durationText}</p>
+            <p><strong>Pickup Location:</strong> ${destination || 'N/A'}</p>
             <p><strong>Booking Date:</strong> ${new Date(bookingDate).toLocaleDateString()}</p>
             <p><strong>Booking Time:</strong> ${new Date(bookingDate).toLocaleTimeString()}</p>
             <p><strong>Amount:</strong> ${(amount / 100).toFixed(0)} Taka</p>

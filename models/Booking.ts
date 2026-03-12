@@ -11,6 +11,12 @@ export interface IBooking extends Document {
   status: 'pending' | 'paid' | 'confirmed' | 'cancelled';
   stripeSessionId?: string;
   stripePaymentId?: string;
+  duration: number;
+  durationUnit: 'minute' | 'hour';
+  destination: string;
+  latitude?: number;
+  longitude?: number;
+  hourlyRate?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -54,6 +60,22 @@ const BookingSchema = new Schema(
     },
     stripeSessionId: String,
     stripePaymentId: String,
+    duration: {
+      type: Number,
+      default: 1,
+    },
+    durationUnit: {
+      type: String,
+      enum: ['minute', 'hour'],
+      default: 'hour',
+    },
+    destination: {
+      type: String,
+      required: [true, 'Please provide destination'],
+    },
+    latitude: Number,
+    longitude: Number,
+    hourlyRate: Number,
   },
   {
     timestamps: true,
