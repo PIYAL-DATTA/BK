@@ -12,11 +12,15 @@ export async function POST(request: Request) {
 
     const { bookingData } = body;
 
+    console.log('Creating booking with data:', bookingData);
+
     // Create booking in database
     const booking = await Booking.create({
       ...bookingData,
       status: 'pending',
     });
+
+    console.log('Booking created:', booking._id);
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -24,7 +28,7 @@ export async function POST(request: Request) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'bdt',
             product_data: {
               name: bookingData.serviceName,
               description: `Booking for ${bookingData.customerName}`,
@@ -43,13 +47,21 @@ export async function POST(request: Request) {
       },
     });
 
+    console.log('Stripe session created:', session.id);
+
     // Update booking with session ID
     booking.stripeSessionId = session.id;
     await booking.save();
 
-    return NextResponse.json({ sessionId: session.id, bookingId: booking._id });
+    console.log('Booking updated with session ID:', session.id);
+
+    return NextResponse.json({ 
+      sessionId: session.id, 
+      bookingId: booking._id,
+      url: session.url 
+    });
   } catch (error) {
-    console.error('Checkout error:', error);
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
+    console.error('✗ Checkout error:', error);
+    return NextResponse.json({ error: 'Failed to create checkout session', details: String(error) }, { status: 500 });
   }
 }

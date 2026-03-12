@@ -79,6 +79,8 @@ export default function BookingForm() {
         ...formData,
       };
 
+      console.log('Sending booking request with data:', bookingData);
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -89,14 +91,23 @@ export default function BookingForm() {
 
       const data = await response.json();
 
-      if (data.sessionId) {
+      console.log('Checkout response:', data);
+
+      if (data.url) {
         setMessage({ type: 'success', text: 'Booking successful! Redirecting to payment...' });
-        // Redirect to Stripe Checkout
+        // Use the Stripe-provided URL
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 1500);
+      } else if (data.sessionId) {
+        // Fallback if url is not returned
+        setMessage({ type: 'success', text: 'Booking successful! Redirecting to payment...' });
         setTimeout(() => {
           window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
         }, 1500);
       } else {
-        setMessage({ type: 'error', text: 'Booking failed. Please try again.' });
+        console.error('No session URL or ID returned:', data);
+        setMessage({ type: 'error', text: `Booking failed: ${data.error || 'Unknown error'}` });
       }
     } catch (error) {
       console.error('Booking error:', error);
