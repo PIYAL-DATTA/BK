@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import L from '@/lib/leaflet-config';
 
 interface Service {
   _id: string;
@@ -16,6 +17,8 @@ export default function BookingForm() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
+  const mapRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({
     type: null,
     text: '',
@@ -62,6 +65,75 @@ export default function BookingForm() {
   useEffect(() => {
     setServices(defaultServices);
   }, []);
+
+  // Initialize map when modal opens
+  useEffect(() => {
+    if (showMapModal && !mapRef.current) {
+      // Default center: Dhaka, Bangladesh
+      const defaultLat = 23.8103;
+      const defaultLng = 90.4125;
+
+      setTimeout(() => {
+        const mapContainer = document.getElementById('map-container');
+        if (mapContainer && !mapRef.current) {
+          const map = L.map('map-container').setView([defaultLat, defaultLng], 13);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+          }).addTo(map);
+
+          // Add click handler to place marker
+          map.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+
+            // Remove old marker
+            if (markerRef.current) {
+              map.removeLayer(markerRef.current);
+            }
+
+            // Add new marker
+            const marker = L.marker([lat, lng])
+              .addTo(map)
+              .bindPopup(`Selected Location<br/>Lat: ${lat.toFixed(4)}<br/>Lng: ${lng.toFixed(4)}`);
+
+            markerRef.current = marker;
+
+            // Reverse geocode to get address (using Nominatim API - free)
+            fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                const address = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                setFormData((prev) => ({
+                  ...prev,
+                  destination: address,
+                }));
+              })
+              .catch(() => {
+                // Fallback to coordinates if reverse geocoding fails
+                setFormData((prev) => ({
+                  ...prev,
+                  destination: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+                }));
+              });
+          });
+
+          mapRef.current = map;
+        }
+      }, 100);
+    }
+
+    return () => {
+      // Cleanup map when modal closes
+      if (!showMapModal && mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+        markerRef.current = null;
+      }
+    };
+  }, [showMapModal]);
 
   // Calculate total price based on duration
   useEffect(() => {
@@ -309,12 +381,15 @@ export default function BookingForm() {
         </button>
       </div>
 
-      {/* Google Maps Modal */}
+      {/* OpenStreetMap Modal */}
       {showMapModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 h-96 flex flex-col">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Select Location</h2>
+              <div>
+                <h2 className="text-xl font-bold">Select Location</h2>
+                <p className="text-sm text-gray-500 mt-1">Click on the map to select your pickup location</p>
+              </div>
               <button
                 onClick={() => setShowMapModal(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -323,38 +398,18 @@ export default function BookingForm() {
               </button>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Search for an address</label>
-              <input
-                type="text"
-                placeholder="Type an address to search..."
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value) {
-                    setFormData(prev => ({
-                      ...prev,
-                      destination: value,
-                    }));
-                  }
-                }}
-                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-              />
-            </div>
+            {/* Map Container */}
+            <div
+              id="map-container"
+              className="flex-1 rounded-lg border border-gray-300 mb-4"
+              style={{ height: '300px' }}
+            />
 
-            <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center mb-4">
-              <div className="text-center text-gray-600">
-                <p className="text-lg mb-2">🗺️ Google Maps</p>
-                <p className="text-sm">Map integration would display here</p>
-                <p className="text-xs text-gray-500 mt-2">
-                  For production: Add Google Maps API key to show interactive map
-                </p>
-              </div>
-            </div>
-
+            {/* Address Display and Confirm */}
             <div className="flex gap-3">
               <input
                 type="text"
-                placeholder="Confirm address"
+                placeholder="Selected address will appear here"
                 value={formData.destination}
                 onChange={(e) =>
                   setFormData(prev => ({
@@ -366,7 +421,7 @@ export default function BookingForm() {
               />
               <button
                 onClick={() => setShowMapModal(false)}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium whitespace-nowrap"
               >
                 Confirm
               </button>
