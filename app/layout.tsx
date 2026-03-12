@@ -34,7 +34,7 @@ export default function RootLayout({
               <h1 className="text-2xl font-bold text-gray-900">Booking</h1>
             </div>
             <div className="hidden md:flex space-x-8 items-center">
-              <a href="#home" className="text-gray-700 hover:text-blue-600 font-medium transition">
+              <a href="/" className="text-gray-700 hover:text-blue-600 font-medium transition">
                 Home
               </a>
               <a href="#services" className="text-gray-700 hover:text-blue-600 font-medium transition">
