@@ -206,9 +206,6 @@ The application will be available at `http://localhost:3000`
 - Check that IP address is whitelisted in MongoDB Atlas
 - Ensure database name in connection string is correct
 
-## License
-
-MIT License
 
 ## Support
 
